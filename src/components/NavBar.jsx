@@ -1,0 +1,97 @@
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { getCategories } from '../api/bookApi'
+import { useAuth } from '../context/AuthContext'
+import './NavBar.css'
+
+export default function NavBar() {
+  const [categories, setCategories] = useState([])
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [searchText, setSearchText] = useState('')
+  const dropdownRef = useRef(null)
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { isAuthenticated, logoutUser } = useAuth()
+
+  useEffect(() => {
+    getCategories().then((res) => setCategories(res.data)).catch(() => setCategories([]))
+  }, [])
+
+  // đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleCategoryClick = (categoryId) => {
+    setShowDropdown(false)
+    navigate(`/?category=${categoryId}`)
+  }
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    if (searchText.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchText.trim())}`)
+    }
+  }
+
+  return (
+    <nav className="navbar">
+      <Link to="/" className="navbar-logo">📚 BookReading</Link>
+
+      <div className="navbar-links">
+        <div className="navbar-item" ref={dropdownRef}>
+          <button
+            className="navbar-link"
+            onClick={() => setShowDropdown((v) => !v)}
+          >
+            Category ▾
+          </button>
+          {showDropdown && (
+            <div className="category-dropdown">
+              {categories.length === 0 && <p className="dropdown-empty">Không có thể loại</p>}
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  className="dropdown-item"
+                  onClick={() => handleCategoryClick(c.id)}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <Link to="/authors" className="navbar-link">Author</Link>
+
+        {isAuthenticated && (
+          <Link to="/?favorites=1" className="navbar-link">My Favorite Books</Link>
+        )}
+      </div>
+
+      <form className="navbar-search" onSubmit={handleSearchSubmit}>
+        <input
+          type="text"
+          placeholder="Tìm sách..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+        <button type="submit">🔍</button>
+      </form>
+
+      <div className="navbar-auth">
+        {isAuthenticated ? (
+          <button className="navbar-link" onClick={logoutUser}>Đăng xuất</button>
+        ) : (
+          <Link to="/login" className="navbar-link">Đăng nhập</Link>
+        )}
+      </div>
+    </nav>
+  )
+}
