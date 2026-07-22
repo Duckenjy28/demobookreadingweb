@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { getBooks, getFavoriteBooks } from '../api/bookApi'
+import { getBooks, getFavoriteBooks, searchBooks } from '../api/bookApi'
 import { useAuth } from '../context/AuthContext'
 import NavBar from '../components/NavBar'
 import BookCard from '../components/BookCard'
@@ -14,14 +14,21 @@ export default function Home() {
   const [searchParams] = useSearchParams()
 
   const categoryId = searchParams.get('category')
-  const searchText = searchParams.get('search')?.toLowerCase()
-  const showFavoritesOnly = searchParams.get('favorites') === '1'
+  const searchText = searchParams.get('search')
 
+  // Tải danh sách sách chính — dùng search API nếu có từ khóa, ngược lại lấy full list
   useEffect(() => {
-    getBooks()
-      .then((res) => setBooks(res.data))
-      .catch((err) => setError(err.response?.status + ' - ' + err.message))
-  }, [])
+    setError('')
+    if (searchText) {
+      searchBooks(searchText)
+        .then((res) => setBooks(res.data.items))
+        .catch((err) => setError(err.response?.status + ' - ' + err.message))
+    } else {
+      getBooks()
+        .then((res) => setBooks(res.data))
+        .catch((err) => setError(err.response?.status + ' - ' + err.message))
+    }
+  }, [searchText])
 
   useEffect(() => {
     if (isAuthenticated && user?.id) {
@@ -31,14 +38,11 @@ export default function Home() {
     }
   }, [isAuthenticated, user])
 
-  // lọc client-side
+  // Lọc theo category chỉ áp dụng được khi có categoryId (search API không trả categoryId)
   let filteredBooks = books
-if (categoryId) {
-  filteredBooks = filteredBooks.filter((b) => String(b.categoryId) === categoryId)
-}
-if (searchText) {
-  filteredBooks = filteredBooks.filter((b) => b.title.toLowerCase().includes(searchText))
-}
+  if (categoryId && !searchText) {
+    filteredBooks = filteredBooks.filter((b) => String(b.categoryId) === categoryId)
+  }
 
   return (
     <div>
@@ -55,20 +59,22 @@ if (searchText) {
           </section>
         )}
 
-        {!showFavoritesOnly && (
-          <section className="book-section">
-            <h3>
-              {categoryId ? 'Kết quả theo thể loại' : searchText ? `Kết quả tìm kiếm: "${searchText}"` : 'Weekly Featured'}
-            </h3>
-            {filteredBooks.length === 0 ? (
-              <p>Không tìm thấy sách nào.</p>
-            ) : (
-              <div className="book-grid">
-                {filteredBooks.map((b) => <BookCard key={b.id} book={b} />)}
-              </div>
-            )}
-          </section>
-        )}
+        <section className="book-section">
+          <h3>
+            {searchText
+              ? `Kết quả tìm kiếm: "${searchText}"`
+              : categoryId
+              ? 'Kết quả theo thể loại'
+              : 'Weekly Featured'}
+          </h3>
+          {filteredBooks.length === 0 ? (
+            <p>Không tìm thấy sách nào.</p>
+          ) : (
+            <div className="book-grid">
+              {filteredBooks.map((b) => <BookCard key={b.id} book={b} />)}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   )

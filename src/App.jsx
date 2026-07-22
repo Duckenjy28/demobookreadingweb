@@ -5,6 +5,8 @@ import Register from './pages/Register'
 import Home from './pages/Home'
 import AuthorList from './pages/AuthorList'
 import AuthorDetail from './pages/AuthorDetail'
+import BookDetail from './pages/BookDetail'
+import ChapterDetail from './pages/ChapterDetail'
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/authors" element={<AuthorList />} />
           <Route path="/authors/:id" element={<AuthorDetail />} />
+          <Route path="/books/:id" element={<BookDetail />} />
+          <Route path="/chapters/:id" element={<ChapterDetail />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
