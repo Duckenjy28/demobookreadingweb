@@ -108,7 +108,7 @@ export default function BookDetail() {
       return
     }
     if (chapters.length > 0) {
-      navigate(`/chapters/${chapters[0].id}`)
+      navigate(`/chapters/${chapters[0].id}?bookId=${id}`)
     }
   }
 
@@ -195,7 +195,7 @@ export default function BookDetail() {
               {chapterError && <p className="chapter-notice">{chapterError}</p>}
               {!chapterError && chapters.length === 0 && <p>Chưa có chương nào.</p>}
               {chapters.map((ch) => (
-                <Link key={ch.id} to={`/chapters/${ch.id}`} className="chapter-item">
+                <Link key={ch.id} to={`/chapters/${ch.id}?bookId=${id}`} className="chapter-item">
                   <span>Chương {ch.pageNumber}: {ch.title}</span>
                 </Link>
               ))}

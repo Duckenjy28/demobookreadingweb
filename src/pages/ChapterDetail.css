@@ -1,7 +1,123 @@
-.chapter-detail-page {
-  max-width: 760px;
+/* Thanh điều hướng ngang trên cùng */
+.chapter-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e5ee;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.chapter-topbar-book {
+  font-weight: 700;
+  color: #1f2937;
+  text-decoration: none;
+  font-size: 14px;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chapter-topbar-book:hover {
+  color: #3b6cf6;
+}
+
+.chapter-topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chapter-topbar-nav button {
+  background: #eef2ff;
+  color: #3b6cf6;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+.chapter-topbar-nav button:hover:not(:disabled) {
+  background: #dbe4ff;
+}
+.chapter-topbar-nav button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chapter-topbar-current {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* Layout 2 cột: sidebar + nội dung */
+.chapter-layout {
+  display: flex;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px;
+  gap: 32px;
+  padding: 0 24px;
+}
+
+/* Sidebar bên trái */
+.chapter-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  padding: 24px 0;
+  position: sticky;
+  top: 70px;
+  align-self: flex-start;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+
+.chapter-sidebar h4 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chapter-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chapter-sidebar-item {
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #4b5563;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.chapter-sidebar-item:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+.chapter-sidebar-item.active {
+  background: #eef2ff;
+  color: #3b6cf6;
+  font-weight: 700;
+}
+
+/* Nội dung chương */
+.chapter-detail-page {
+  flex: 1;
+  max-width: 760px;
+  padding: 32px 0;
+  min-width: 0;
 }
 
 .chapter-detail-page h1 {
@@ -21,4 +137,42 @@
 .chapter-error {
   color: #dc2626;
   font-weight: 600;
+}
+
+.chapter-bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e5ee;
+}
+
+.chapter-bottom-nav button {
+  background: #3b6cf6;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.chapter-bottom-nav button:hover:not(:disabled) {
+  background: #2d5bdb;
+}
+.chapter-bottom-nav button:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* Responsive: ẩn sidebar trên màn nhỏ */
+@media (max-width: 900px) {
+  .chapter-layout {
+    flex-direction: column;
+  }
+  .chapter-sidebar {
+    width: 100%;
+    position: static;
+    max-height: none;
+  }
 }
