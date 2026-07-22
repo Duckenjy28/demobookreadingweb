@@ -9,6 +9,8 @@ import {
   getBooks,
 } from '../api/bookApi'
 import { useAuth } from '../context/AuthContext'
+import { HistoryContext } from '../context/HistoryContext'
+import { useContext } from 'react'
 import NavBar from '../components/NavBar'
 import BookCard from '../components/BookCard'
 import './BookDetail.css'
@@ -24,6 +26,8 @@ export default function BookDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { isAuthenticated, user } = useAuth()
+  const { getProgress } = useContext(HistoryContext)
+  const progress = getProgress(id)
 
   const [book, setBook] = useState(null)
   const [chapters, setChapters] = useState([])
@@ -68,7 +72,7 @@ export default function BookDetail() {
     if (isAuthenticated && user?.id) {
       getFavoriteBooks(user.id)
         .then((res) => setIsFavorite(res.data.some((b) => String(b.id) === id)))
-        .catch(() => {})
+        .catch(() => { })
     }
   }, [isAuthenticated, user, id])
 
@@ -105,6 +109,10 @@ export default function BookDetail() {
   const handleRead = () => {
     if (!isAuthenticated) {
       navigate('/login')
+      return
+    }
+    if (progress && progress.chapterId) {
+      navigate(`/chapters/${progress.chapterId}`, { state: { bookId: id } })
       return
     }
     if (chapters.length > 0) {
@@ -159,7 +167,9 @@ export default function BookDetail() {
             </p>
 
             <div className="book-detail-actions">
-              <button className="btn-primary" onClick={handleRead}>ĐỌC</button>
+              <button className="btn-primary" onClick={handleRead}>
+                {progress ? 'ĐỌC TIẾP' : 'ĐỌC'}
+              </button>
               <button
                 className={isFavorite ? 'btn-secondary active' : 'btn-secondary'}
                 onClick={handleToggleFavorite}
@@ -201,19 +211,18 @@ export default function BookDetail() {
               ))}
             </div>
           )}
-        </div>
 
         {suggestedBooks.length > 0 && (
-          <div className="related-section">
-            <h3>Có thể bạn cũng thích</h3>
-            <div className="book-grid">
-              {suggestedBooks.map((b) => (
-                <BookCard key={b.id} book={b} />
-              ))}
+            <div className="related-section">
+              <h3>Có thể bạn cũng thích</h3>
+              <div className="book-grid">
+                {suggestedBooks.map((b) => (
+                  <BookCard key={b.id} book={b} />
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
-  )
+      )
 }

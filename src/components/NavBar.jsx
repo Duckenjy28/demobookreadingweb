@@ -42,7 +42,7 @@ export default function NavBar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-logo">📚 BookReading</Link>
+      <Link to="/" className="navbar-logo">📚 <span>BookReading</span></Link>
 
       <div className="navbar-links">
         <div className="navbar-item" ref={dropdownRef}>
@@ -50,7 +50,8 @@ export default function NavBar() {
             className="navbar-link"
             onClick={() => setShowDropdown((v) => !v)}
           >
-            Category ▾
+            <span className="nav-text">Category ▾</span>
+            <span className="nav-icon">📁</span>
           </button>
           {showDropdown && (
             <div className="category-dropdown">
@@ -68,10 +69,16 @@ export default function NavBar() {
           )}
         </div>
 
-        <Link to="/authors" className="navbar-link">Author</Link>
+        <Link to="/authors" className="navbar-link">
+          <span className="nav-text">Author</span>
+          <span className="nav-icon">✍️</span>
+        </Link>
 
         {isAuthenticated && (
-          <Link to="/?favorites=1" className="navbar-link">My Favorite Books</Link>
+          <Link to="/?favorites=1" className="navbar-link">
+            <span className="nav-text">My Favorite Books</span>
+            <span className="nav-icon">❤️</span>
+          </Link>
         )}
       </div>
 
@@ -87,9 +94,15 @@ export default function NavBar() {
 
       <div className="navbar-auth">
         {isAuthenticated ? (
-          <button className="navbar-link" onClick={logoutUser}>Đăng xuất</button>
+          <button className="navbar-link" onClick={logoutUser}>
+            <span className="nav-text">Đăng xuất</span>
+            <span className="nav-icon">🚪</span>
+          </button>
         ) : (
-          <Link to="/login" className="navbar-link">Đăng nhập</Link>
+          <Link to="/login" className="navbar-link">
+            <span className="nav-text">Đăng nhập</span>
+            <span className="nav-icon">👤</span>
+          </Link>
         )}
       </div>
     </nav>

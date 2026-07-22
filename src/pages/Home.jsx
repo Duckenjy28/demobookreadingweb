@@ -4,7 +4,10 @@ import { getBooks, getFavoriteBooks, searchBooks } from '../api/bookApi'
 import { useAuth } from '../context/AuthContext'
 import NavBar from '../components/NavBar'
 import BookCard from '../components/BookCard'
+import { Link, useNavigate } from 'react-router-dom'
 import './Home.css'
+
+const MOCK_TAGS = ['#Tiên Hiệp', '#Huyền Huyễn', '#Ngôn Tình', '#Đô Thị', '#Võng Du', '#Khoa Huyễn']
 
 export default function Home() {
   const { isAuthenticated, user } = useAuth()
@@ -12,6 +15,7 @@ export default function Home() {
   const [favorites, setFavorites] = useState([])
   const [error, setError] = useState('')
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   const categoryId = searchParams.get('category')
   const searchText = searchParams.get('search')
@@ -52,9 +56,37 @@ export default function Home() {
 
         {isAuthenticated && favorites.length > 0 && (
           <section className="book-section">
-            <h3>❤️ Sách yêu thích của bạn</h3>
+            <h3>❤️ Sách đang đọc</h3>
             <div className="book-row">
               {favorites.map((b) => <BookCard key={b.id} book={b} />)}
+            </div>
+          </section>
+        )}
+
+        <section className="book-section tags-section">
+          <div className="tags-container">
+            {MOCK_TAGS.map(tag => (
+              <button 
+                key={tag} 
+                className="tag-badge"
+                onClick={() => navigate(`/?search=${tag.replace('#', '')}`)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {!searchText && !categoryId && (
+          <section className="book-section">
+            <h3>🔥 Bảng Xếp Hạng (Trending)</h3>
+            <div className="book-row trending-row">
+              {books.slice().sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 10).map((b, index) => (
+                <div key={b.id} className="trending-item">
+                  <span className={`trending-rank rank-${index + 1}`}>{index + 1}</span>
+                  <BookCard book={b} />
+                </div>
+              ))}
             </div>
           </section>
         )}
