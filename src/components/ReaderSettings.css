@@ -69,3 +69,21 @@
   cursor: pointer;
   font-weight: bold;
 }
+.setting-options button.active,
+.setting-options button:active {
+  background: var(--primary-color, #3b6cf6);
+  color: white;
+  border-color: var(--primary-color, #3b6cf6);
+}
+
+.close-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  background: var(--primary-color, #3b6cf6);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { getCategories } from '../api/bookApi'
 import { useAuth } from '../context/AuthContext'
 import './NavBar.css'
@@ -7,11 +7,12 @@ import './NavBar.css'
 export default function NavBar() {
   const [categories, setCategories] = useState([])
   const [showDropdown, setShowDropdown] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const [searchText, setSearchText] = useState('')
   const dropdownRef = useRef(null)
+  const userMenuRef = useRef(null)
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const { isAuthenticated, logoutUser } = useAuth()
+  const { isAuthenticated, user, logoutUser } = useAuth()
 
   useEffect(() => {
     getCategories().then((res) => setCategories(res.data)).catch(() => setCategories([]))
@@ -22,6 +23,9 @@ export default function NavBar() {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowDropdown(false)
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setShowUserMenu(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -39,6 +43,16 @@ export default function NavBar() {
       navigate(`/?search=${encodeURIComponent(searchText.trim())}`)
     }
   }
+
+  const handleLogout = () => {
+    setShowUserMenu(false)
+    logoutUser()
+    navigate('/')
+  }
+
+  const initials = user?.name
+    ? user.name.trim().split(/\s+/).slice(-2).map((w) => w[0]).join('').toUpperCase()
+    : '?'
 
   return (
     <nav className="navbar">
@@ -80,6 +94,12 @@ export default function NavBar() {
             <span className="nav-icon">❤️</span>
           </Link>
         )}
+        {isAuthenticated && (
+          <Link to="/library" className="navbar-link">
+          <span className="nav-text">Library</span>
+           <span className="nav-icon">📚</span>
+          </Link>
+         )}
       </div>
 
       <form className="navbar-search" onSubmit={handleSearchSubmit}>
@@ -94,10 +114,38 @@ export default function NavBar() {
 
       <div className="navbar-auth">
         {isAuthenticated ? (
-          <button className="navbar-link" onClick={logoutUser}>
-            <span className="nav-text">Đăng xuất</span>
-            <span className="nav-icon">🚪</span>
-          </button>
+          <div className="user-menu" ref={userMenuRef}>
+            <button
+              className="user-menu-trigger"
+              onClick={() => setShowUserMenu((v) => !v)}
+            >
+              <span className="user-avatar">{initials}</span>
+              <span className="user-name">{user?.name || 'Tài khoản'}</span>
+              <span className="user-caret">▾</span>
+            </button>
+
+            {showUserMenu && (
+              <div className="user-dropdown">
+                <div className="user-dropdown-header">
+                  <span className="user-avatar user-avatar-lg">{initials}</span>
+                  <div>
+                    <div className="user-dropdown-name">{user?.name}</div>
+                    <div className="user-dropdown-email">{user?.email}</div>
+                  </div>
+                </div>
+                <Link
+                  to="/profile"
+                  className="user-dropdown-item"
+                  onClick={() => setShowUserMenu(false)}
+                >
+                  👤 Xem hồ sơ
+                </Link>
+                <button className="user-dropdown-item logout" onClick={handleLogout}>
+                  🚪 Đăng xuất
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <Link to="/login" className="navbar-link">
             <span className="nav-text">Đăng nhập</span>

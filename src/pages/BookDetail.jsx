@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   getBookDetail,
@@ -10,7 +10,6 @@ import {
 } from '../api/bookApi'
 import { useAuth } from '../context/AuthContext'
 import { HistoryContext } from '../context/HistoryContext'
-import { useContext } from 'react'
 import NavBar from '../components/NavBar'
 import BookCard from '../components/BookCard'
 import './BookDetail.css'
@@ -72,7 +71,7 @@ export default function BookDetail() {
     if (isAuthenticated && user?.id) {
       getFavoriteBooks(user.id)
         .then((res) => setIsFavorite(res.data.some((b) => String(b.id) === id)))
-        .catch(() => { })
+        .catch(() => {})
     }
   }, [isAuthenticated, user, id])
 
@@ -112,7 +111,7 @@ export default function BookDetail() {
       return
     }
     if (progress && progress.chapterId) {
-      navigate(`/chapters/${progress.chapterId}`, { state: { bookId: id } })
+      navigate(`/chapters/${progress.chapterId}?bookId=${id}`)
       return
     }
     if (chapters.length > 0) {
@@ -211,18 +210,19 @@ export default function BookDetail() {
               ))}
             </div>
           )}
+        </div>
 
         {suggestedBooks.length > 0 && (
-            <div className="related-section">
-              <h3>Có thể bạn cũng thích</h3>
-              <div className="book-grid">
-                {suggestedBooks.map((b) => (
-                  <BookCard key={b.id} book={b} />
-                ))}
-              </div>
+          <div className="related-section">
+            <h3>Có thể bạn cũng thích</h3>
+            <div className="book-grid">
+              {suggestedBooks.map((b) => (
+                <BookCard key={b.id} book={b} />
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-      )
+    </div>
+  )
 }
