@@ -12,6 +12,7 @@ export default function BookForm() {
 
   const [isNewAuthor, setIsNewAuthor] = useState(false)
   const [newAuthorName, setNewAuthorName] = useState('')
+  const [newAuthorBio, setNewAuthorBio] = useState('')
 
   const [form, setForm] = useState({
     title: '',
@@ -67,6 +68,8 @@ export default function BookForm() {
 
         authorId: isNewAuthor ? null : Number(form.authorId),
         authorName: isNewAuthor ? newAuthorName.trim() : null,
+        authorBio: isNewAuthor ? newAuthorBio.trim() : null,
+        isNewAuthor: isNewAuthor,
 
         categoryId: Number(form.categoryId),
 
@@ -129,6 +132,7 @@ export default function BookForm() {
                   } else {
                     setIsNewAuthor(false)
                     setNewAuthorName('')
+                    setNewAuthorBio('')
                     handleChange('authorId', e.target.value)
                   }
                 }}
@@ -146,14 +150,21 @@ export default function BookForm() {
               </select>
 
               {isNewAuthor && (
-                <input
-                  type="text"
-                  placeholder="Nhập tên tác giả"
-                  value={newAuthorName}
-                  onChange={(e) => setNewAuthorName(e.target.value)}
-                  style={{ marginTop: '10px' }}
-                  required
-                />
+                <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <input
+                    type="text"
+                    placeholder="Nhập tên tác giả *"
+                    value={newAuthorName}
+                    onChange={(e) => setNewAuthorName(e.target.value)}
+                    required
+                  />
+                  <textarea
+                    placeholder="Thông tin tiểu sử tác giả (không bắt buộc)"
+                    rows={3}
+                    value={newAuthorBio}
+                    onChange={(e) => setNewAuthorBio(e.target.value)}
+                  />
+                </div>
               )}
             </div>
 
