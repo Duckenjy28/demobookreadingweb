@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from 'react'
 
 export const ReaderContext = createContext()
@@ -8,8 +9,8 @@ export function ReaderProvider({ children }) {
     if (saved) {
       try {
         return JSON.parse(saved)
-      } catch (e) {
-        // Handle JSON parse error silently
+      } catch {
+        // ignore parse errors
       }
     }
     return {

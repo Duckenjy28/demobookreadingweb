@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getAuthors } from '../api/bookApi'
-import NavBar from '../components/NavBar'
-import './Home.css'
+import { getAuthors } from '../../api/bookApi'
+import NavBar from '../../components/NavBar'
+import '../css/Home.css'
 
 export default function AuthorList() {
   const [authors, setAuthors] = useState([])

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getAuthorDetail, getBooks } from '../api/bookApi'
-import NavBar from '../components/NavBar'
-import BookCard from '../components/BookCard'
-import './Home.css'
+import { getAuthorDetail, getBooks } from '../../api/bookApi'
+import NavBar from '../../components/NavBar'
+import BookCard from '../../components/BookCard'
+import '../css/Home.css'
 
 export default function AuthorDetail() {
   const { id } = useParams()

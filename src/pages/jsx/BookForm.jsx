@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { createBook, getAuthors, getCategories } from '../api/bookApi'
-import NavBar from '../components/NavBar'
-import './BookForm.css'
+import { useNavigate, useParams } from 'react-router-dom'
+import { createBook, updateBook, getBookDetail, getAuthors, getCategories } from '../../api/bookApi'
+import NavBar from '../../components/NavBar'
+import '../css/BookForm.css'
 
 export default function BookForm() {
   const navigate = useNavigate()
+  const { id } = useParams()
 
   const [authors, setAuthors] = useState([])
   const [categories, setCategories] = useState([])
@@ -28,6 +29,23 @@ export default function BookForm() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    if (id) {
+      getBookDetail(id)
+        .then((res) => {
+          const b = res.data
+          setForm((prev) => ({
+            ...prev,
+            title: b.title || '',
+            description: b.description || '',
+            authorId: b.authorId || '',
+            categoryId: b.categoryId || '',
+            coverImage: b.coverImage || '',
+            status: b.status || 'ONGOING',
+            isPublic: b.isPublic ?? true,
+          }))
+        })
+        .catch(() => {})
+    }
     getAuthors()
       .then((res) => setAuthors(res.data))
       .catch(() => setAuthors([]))
@@ -35,7 +53,7 @@ export default function BookForm() {
     getCategories()
       .then((res) => setCategories(res.data))
       .catch(() => setCategories([]))
-  }, [])
+  }, [id])
 
   const handleChange = (field, value) => {
     setForm((prev) => ({
@@ -62,25 +80,47 @@ export default function BookForm() {
     setLoading(true)
 
     try {
-      const res = await createBook({
-        title: form.title,
-        description: form.description,
+      if (id) {
+        await updateBook(id, {
+          title: form.title,
+          description: form.description,
 
-        authorId: isNewAuthor ? null : Number(form.authorId),
-        authorName: isNewAuthor ? newAuthorName.trim() : null,
-        authorBio: isNewAuthor ? newAuthorBio.trim() : null,
-        isNewAuthor: isNewAuthor,
+          authorId: isNewAuthor ? null : Number(form.authorId),
+          authorName: isNewAuthor ? newAuthorName.trim() : null,
+          authorBio: isNewAuthor ? newAuthorBio.trim() : null,
+          isNewAuthor: isNewAuthor,
 
-        categoryId: Number(form.categoryId),
+          categoryId: Number(form.categoryId),
 
-        coverImage: form.coverImage || null,
+          coverImage: form.coverImage || null,
 
-        status: form.status,
+          status: form.status,
 
-        isPublic: form.isPublic,
-      })
+          isPublic: form.isPublic,
+        })
 
-      navigate(`/library/books/${res.data.id}`)
+        navigate(`/library/books/${id}`)
+      } else {
+        const res = await createBook({
+          title: form.title,
+          description: form.description,
+
+          authorId: isNewAuthor ? null : Number(form.authorId),
+          authorName: isNewAuthor ? newAuthorName.trim() : null,
+          authorBio: isNewAuthor ? newAuthorBio.trim() : null,
+          isNewAuthor: isNewAuthor,
+
+          categoryId: Number(form.categoryId),
+
+          coverImage: form.coverImage || null,
+
+          status: form.status,
+
+          isPublic: form.isPublic,
+        })
+
+        navigate(`/library/books/${res.data.id}`)
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Tạo truyện thất bại')
     } finally {
@@ -93,7 +133,7 @@ export default function BookForm() {
       <NavBar />
 
       <div className="book-form-page">
-        <h1>Thêm truyện mới</h1>
+        <h1>{id ? 'Sửa truyện' : 'Thêm truyện mới'}</h1>
 
         {error && <div className="book-form-error">{error}</div>}
 
@@ -241,7 +281,7 @@ export default function BookForm() {
               className="btn-primary"
               disabled={loading}
             >
-              {loading ? 'Đang tạo...' : 'Tạo truyện'}
+                {loading ? (id ? 'Đang cập nhật...' : 'Đang tạo...') : (id ? 'Cập nhật truyện' : 'Tạo truyện')}
             </button>
           </div>
         </form>

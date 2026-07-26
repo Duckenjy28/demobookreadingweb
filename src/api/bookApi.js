@@ -25,6 +25,22 @@ export const updateBook = (id, data) => axiosClient.put(`/books/update/${id}`, d
 export const toggleBookVisibility = (id, isPublic) =>
   axiosClient.patch(`/books/change-visibility/${id}`, null, { params: { isPublic } })
 
+export const deleteBook = (id) => axiosClient.delete(`/books/delete/${id}`)
+
+// Authors (admin)
+export const createAuthor = (data) => axiosClient.post('/authors/create', data)
+export const updateAuthor = (id, data) => axiosClient.put(`/authors/update/${id}`, data)
+export const deleteAuthor = (id) => axiosClient.delete(`/authors/delete/${id}`)
+
+// Categories (admin)
+export const createCategory = (data) => axiosClient.post('/categories/create', data)
+export const updateCategory = (id, data) => axiosClient.put(`/categories/update/${id}`, data)
+export const deleteCategory = (id) => axiosClient.delete(`/categories/delete/${id}`)
+
+// Users (backend may not expose full user management; placeholder)
+export const getUsers = () => axiosClient.get('/users/list')
+export const deleteUser = (id) => axiosClient.delete(`/users/delete/${id}`)
+
 export const createChapter = (bookId, chapterData, file) => {
   const formData = new FormData()
   formData.append(

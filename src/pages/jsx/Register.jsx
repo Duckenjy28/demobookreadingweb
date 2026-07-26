@@ -1,17 +1,16 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { login } from '../api/authApi'
-import { useAuth } from '../context/AuthContext'
-import './Auth.css'
+import { register } from '../../api/authApi'
+import '../css/Auth.css'
 
-export default function Login() {
+export default function Register() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [phone, setPhone] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [remember, setRemember] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { loginUser } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -19,11 +18,10 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      const res = await login(email, password)
-      loginUser(res.data.token)
-      navigate('/')
+      await register(name, email, password, phone)
+      navigate('/login')
     } catch (err) {
-      setError(err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.')
+      setError(err.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -44,12 +42,23 @@ export default function Login() {
       <div className="auth-container">
         <div className="auth-card">
           <h2 className="auth-title">BookReading</h2>
-          <h1 className="auth-heading">Chào mừng trở lại</h1>
-          <p className="auth-subtext">Đăng nhập để tiếp tục hành trình đọc sách của bạn.</p>
+          <h1 className="auth-heading">Tạo tài khoản mới</h1>
+          <p className="auth-subtext">Đăng ký để lưu sách yêu thích và theo dõi tiến trình đọc.</p>
 
           {error && <div className="auth-error-banner">{error}</div>}
 
           <form onSubmit={handleSubmit}>
+            <div className="auth-field">
+              <label>Họ tên</label>
+              <input
+                type="text"
+                placeholder="Nguyễn Văn A"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
             <div className="auth-field">
               <label>Email</label>
               <input
@@ -62,11 +71,21 @@ export default function Login() {
             </div>
 
             <div className="auth-field">
+              <label>Số điện thoại</label>
+              <input
+                type="tel"
+                placeholder="+84901234567"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+
+            <div className="auth-field">
               <label>Mật khẩu</label>
               <div className="auth-password-wrap">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Nhập mật khẩu"
+                  placeholder="Tối thiểu 6 ký tự"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -82,25 +101,13 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="auth-row">
-              <label className="auth-remember">
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                />
-                Ghi nhớ đăng nhập
-              </label>
-              <Link to="/forgot-password" className="auth-link">Quên mật khẩu?</Link>
-            </div>
-
             <button type="submit" className="auth-submit-btn" disabled={loading}>
-              {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+              {loading ? 'Đang đăng ký...' : 'Đăng ký'}
             </button>
           </form>
 
           <p className="auth-footer-text">
-            Chưa có tài khoản? <Link to="/register" className="auth-link">Đăng ký ngay</Link>
+            Đã có tài khoản? <Link to="/login" className="auth-link">Đăng nhập</Link>
           </p>
         </div>
       </div>

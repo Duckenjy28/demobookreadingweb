@@ -13,6 +13,7 @@ export default function NavBar() {
   const userMenuRef = useRef(null)
   const navigate = useNavigate()
   const { isAuthenticated, user, logoutUser } = useAuth()
+  const isAdmin = user?.roles?.some((r) => r.name === 'ADMIN')
 
   useEffect(() => {
     getCategories().then((res) => setCategories(res.data)).catch(() => setCategories([]))
@@ -100,6 +101,12 @@ export default function NavBar() {
            <span className="nav-icon">📚</span>
           </Link>
          )}
+        {isAdmin && (
+          <Link to="/admin" className="navbar-link">
+            <span className="nav-text">Admin</span>
+            <span className="nav-icon">🔧</span>
+          </Link>
+        )}
       </div>
 
       <form className="navbar-search" onSubmit={handleSearchSubmit}>

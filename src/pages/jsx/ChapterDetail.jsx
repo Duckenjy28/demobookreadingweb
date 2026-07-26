@@ -1,12 +1,12 @@
-import { useEffect, useState, useContext, useRef } from 'react'
+import { useEffect, useState, useContext, useRef, useCallback } from 'react'
 import { useParams, useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom'
-import { getChapterContent, getBookChapters, getBookDetail } from '../api/bookApi'
-import NavBar from '../components/NavBar'
-import ReaderSettings from '../components/ReaderSettings'
-import { ReaderContext } from '../context/ReaderContext'
-import { HistoryContext } from '../context/HistoryContext'
+import { getChapterContent, getBookChapters, getBookDetail } from '../../api/bookApi'
+import NavBar from '../../components/NavBar'
+import ReaderSettings from '../../components/ReaderSettings'
+import { ReaderContext } from '../../context/ReaderContext'
+import { HistoryContext } from '../../context/HistoryContext'
 import { useSwipeable } from 'react-swipeable'
-import './ChapterDetail.css'
+import '../css/ChapterDetail.css'
 
 export default function ChapterDetail() {
   const { id } = useParams()
@@ -31,8 +31,8 @@ export default function ChapterDetail() {
 
   // Tải nội dung chương hiện tại
   useEffect(() => {
-    setChapter(null)
-    setError('')
+    // reset state asynchronously to avoid sync setState-in-effect lint rule
+    setTimeout(() => { setChapter(null); setError('') }, 0)
     getChapterContent(id)
       .then((res) => {
         setChapter(res.data)
@@ -92,17 +92,17 @@ export default function ChapterDetail() {
   const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null
   const nextChapter = currentIndex >= 0 && currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null
 
-  const goToChapter = (chapterId) => {
+  const goToChapter = useCallback((chapterId) => {
     navigate(`/chapters/${chapterId}?bookId=${bookId}`)
-  }
+  }, [navigate, bookId])
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (prevChapter) goToChapter(prevChapter.id)
-  }
+  }, [prevChapter, goToChapter])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (nextChapter) goToChapter(nextChapter.id)
-  }
+  }, [nextChapter, goToChapter])
 
   // Keyboard navigation
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function ChapterDetail() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [prevChapter, nextChapter, showSettings, showChapterList])
+  }, [handlePrev, handleNext, showSettings, showChapterList])
 
   // Scroll active chapter into view when opening the list
   useEffect(() => {

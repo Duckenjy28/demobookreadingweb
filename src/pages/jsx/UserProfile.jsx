@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { getBooks } from '../api/bookApi'
-import NavBar from '../components/NavBar'
-import BookCard from '../components/BookCard'
-import './UserProfile.css'
-import '../pages/Home.css'
+import { useAuth } from '../../context/AuthContext'
+import { getBooks } from '../../api/bookApi'
+import NavBar from '../../components/NavBar'
+import BookCard from '../../components/BookCard'
+import '../css/UserProfile.css'
+import '../css/Home.css'
 
 const MEMBERSHIP_LABEL = {
   ACTIVE: 'Đang hoạt động',

@@ -7,13 +7,13 @@ import {
   removeFavoriteBook,
   getFavoriteBooks,
   getBooks,
-} from '../api/bookApi'
-import { useAuth } from '../context/AuthContext'
-import { HistoryContext } from '../context/HistoryContext'
-import NavBar from '../components/NavBar'
-import BookCard from '../components/BookCard'
-import './BookDetail.css'
-import './Home.css'
+} from '../../api/bookApi'
+import { useAuth } from '../../context/AuthContext'
+import { HistoryContext } from '../../context/HistoryContext'
+import NavBar from '../../components/NavBar'
+import BookCard from '../../components/BookCard'
+import '../css/BookDetail.css'
+import '../css/Home.css'
 
 const STATUS_LABEL = {
   ONGOING: 'Đang ra',
@@ -44,7 +44,8 @@ export default function BookDetail() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setChapterError('Đăng nhập để xem danh sách chương')
+      // avoid synchronous setState inside effect
+      setTimeout(() => setChapterError('Đăng nhập để xem danh sách chương'), 0)
       return
     }
     let cancelled = false

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getBooks } from '../api/bookApi'
-import { useAuth } from '../context/AuthContext'
-import NavBar from '../components/NavBar'
-import './Library.css'
+import { getBooks } from '../../api/bookApi'
+import { useAuth } from '../../context/AuthContext'
+import NavBar from '../../components/NavBar'
+import '../css/Library.css'
 
 const STATUS_LABEL = {
   ONGOING: 'Đang ra',

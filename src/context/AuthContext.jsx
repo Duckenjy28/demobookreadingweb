@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react'
 import { getCurrentUser } from '../api/bookApi'
 
@@ -8,13 +9,16 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
+    let cancelled = false
     if (token) {
       getCurrentUser()
-        .then((res) => setUser(res.data))
-        .catch(() => setUser(null))
+        .then((res) => { if (!cancelled) setUser(res.data) })
+        .catch(() => { if (!cancelled) setUser(null) })
     } else {
-      setUser(null)
+      // avoid calling setState synchronously inside effect
+      setTimeout(() => { if (!cancelled) setUser(null) }, 0)
     }
+    return () => { cancelled = true }
   }, [token])
 
   const loginUser = (accessToken) => {

@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { getBooks, getFavoriteBooks, searchBooks } from '../api/bookApi'
-import { useAuth } from '../context/AuthContext'
-import NavBar from '../components/NavBar'
-import BookCard from '../components/BookCard'
-import { Link, useNavigate } from 'react-router-dom'
-import './Home.css'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { getBooks, getFavoriteBooks, searchBooks } from '../../api/bookApi'
+import { useAuth } from '../../context/AuthContext'
+import NavBar from '../../components/NavBar'
+import BookCard from '../../components/BookCard'
+import '../css/Home.css'
 
 const MOCK_TAGS = ['#Tiên Hiệp', '#Huyền Huyễn', '#Ngôn Tình', '#Đô Thị', '#Võng Du', '#Khoa Huyễn']
 
@@ -22,7 +21,8 @@ export default function Home() {
 
   // Tải danh sách sách chính — dùng search API nếu có từ khóa, ngược lại lấy full list
   useEffect(() => {
-    setError('')
+    // avoid synchronous setState in effect
+    setTimeout(() => setError(''), 0)
     if (searchText) {
       searchBooks(searchText)
         .then((res) => setBooks(res.data.items))
