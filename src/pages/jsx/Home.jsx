@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
-import { getBooks, getRecentlyUpdatedFavoriteBooks, searchBooks, getRecommendations } from '../api/bookApi'
-import { useAuth } from '../context/AuthContext'
-import NavBar from '../components/NavBar'
-import BookCard from '../components/BookCard'
-import './Home.css'
+import { getBooks, getRecentlyUpdatedFavoriteBooks, searchBooks, getRecommendations } from '../../api/bookApi'
+import { useAuth } from '../../context/AuthContext'
+import NavBar from '../../components/NavBar'
+import BookCard from '../../components/BookCard'
+import '../css/Home.css'
 
 const MOCK_TAGS = ['#Tiên Hiệp', '#Huyền Huyễn', '#Ngôn Tình', '#Đô Thị', '#Võng Du', '#Khoa Huyễn']
 
