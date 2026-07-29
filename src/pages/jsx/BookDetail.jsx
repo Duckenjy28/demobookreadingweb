@@ -142,10 +142,6 @@ export default function BookDetail() {
   }
 
   const handleRead = () => {
-    if (!isAuthenticated) {
-      navigate('/login')
-      return
-    }
     if (progress && progress.chapterId) {
       navigate(`/chapters/${progress.chapterId}?bookId=${id}`)
       return
@@ -181,7 +177,7 @@ export default function BookDetail() {
       <NavBar />
       <div className="book-detail-page">
         <div className="breadcrumb">
-          <Link to="/">🏠</Link> / {book.categoryName} / {book.title}
+          <Link to="/"><i className="bi bi-house-door-fill"></i></Link> / {book.categoryName} / {book.title}
         </div>
 
         <div className="book-detail-header">
@@ -191,12 +187,12 @@ export default function BookDetail() {
             <h1>{book.title}</h1>
 
             <div className="book-detail-meta">
-              <span>📖 {book.categoryName}</span>
-              {chapters.length > 0 && <span>📄 {chapters.length} Chapters</span>}
-              <span>👁 {(book.viewCount ?? 0).toLocaleString()} Views</span>
-              <span>❤️ {book.favoriteCount ?? 0} Likes</span>
-              <span>⭐ {book.averageRating ? book.averageRating.toFixed(1) : 0}/6 ({book.reviewCount ?? 0} Reviews)</span>
-              {statusLabel && <span>🏷 {statusLabel}</span>}
+              <span><i className="bi bi-book"></i> {book.categoryName}</span>
+              {chapters.length > 0 && <span><i className="bi bi-file-earmark-text"></i> {chapters.length} Chapters</span>}
+              <span><i className="bi bi-eye"></i> {(book.viewCount ?? 0).toLocaleString()} Views</span>
+              <span><i className="bi bi-heart-fill text-danger"></i> {book.favoriteCount ?? 0} Likes</span>
+              <span><i className="bi bi-star-fill text-warning"></i> {book.averageRating ? book.averageRating.toFixed(1) : 0}/6 ({book.reviewCount ?? 0} Reviews)</span>
+              {statusLabel && <span><i className="bi bi-tags"></i> {statusLabel}</span>}
             </div>
 
             <p className="book-detail-author">
@@ -211,7 +207,7 @@ export default function BookDetail() {
                 className={isFavorite ? 'btn-secondary active' : 'btn-secondary'}
                 onClick={handleToggleFavorite}
               >
-                {isFavorite ? '✓ Đã yêu thích' : '+ Thêm vào yêu thích'}
+                {isFavorite ? <><i className="bi bi-check-lg"></i> Đã yêu thích</> : <><i className="bi bi-plus-lg"></i> Thêm vào yêu thích</>}
               </button>
             </div>
           </div>
@@ -291,7 +287,9 @@ export default function BookDetail() {
                       <div className="review-meta">
                         <strong>{rv.username || 'Người dùng'}</strong> 
                         <span style={{ color: 'orange', marginLeft: '10px' }}>
-                          {'⭐'.repeat(rv.rating)}
+                          {Array.from({ length: rv.rating }).map((_, i) => (
+                            <i key={i} className="bi bi-star-fill"></i>
+                          ))}
                         </span>
                       </div>
                       <p style={{ marginTop: '5px' }}>{rv.content}</p>

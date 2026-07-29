@@ -57,7 +57,7 @@ export default function NavBar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-logo">📚 <span>BookReading</span></Link>
+      <Link to="/" className="navbar-logo"><i className="bi bi-book-half text-primary me-2"></i> <span>BookReading</span></Link>
 
       <div className="navbar-links">
         <div className="navbar-item" ref={dropdownRef}>
@@ -66,7 +66,7 @@ export default function NavBar() {
             onClick={() => setShowDropdown((v) => !v)}
           >
             <span className="nav-text">Category ▾</span>
-            <span className="nav-icon">📁</span>
+            <span className="nav-icon"><i className="bi bi-folder-fill text-warning"></i></span>
           </button>
           {showDropdown && (
             <div className="category-dropdown">
@@ -86,25 +86,25 @@ export default function NavBar() {
 
         <Link to="/authors" className="navbar-link">
           <span className="nav-text">Author</span>
-          <span className="nav-icon">✍️</span>
+          <span className="nav-icon"><i className="bi bi-pen-fill text-info"></i></span>
         </Link>
 
         {isAuthenticated && (
           <Link to="/?favorites=1" className="navbar-link">
             <span className="nav-text">My Favorite Books</span>
-            <span className="nav-icon">❤️</span>
+            <span className="nav-icon"><i className="bi bi-heart-fill text-danger"></i></span>
           </Link>
         )}
         {isAuthenticated && (
           <Link to="/library" className="navbar-link">
           <span className="nav-text">Library</span>
-           <span className="nav-icon">📚</span>
+           <span className="nav-icon"><i className="bi bi-journal-bookmark-fill text-primary"></i></span>
           </Link>
          )}
         {isAdmin && (
           <Link to="/admin" className="navbar-link">
             <span className="nav-text">Admin</span>
-            <span className="nav-icon">🔧</span>
+            <span className="nav-icon"><i className="bi bi-gear-fill text-secondary"></i></span>
           </Link>
         )}
       </div>

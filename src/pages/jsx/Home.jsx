@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
-import { getBooks, getRecentlyUpdatedFavoriteBooks, searchBooks, getRecommendations } from '../../api/bookApi'
+import { getBooks, getRecentlyUpdatedFavoriteBooks, searchBooks, getRecommendations, getCategories } from '../../api/bookApi'
 import { useAuth } from '../../context/AuthContext'
 import NavBar from '../../components/NavBar'
 import BookCard from '../../components/BookCard'
 import '../css/Home.css'
 
-const MOCK_TAGS = ['#Tiên Hiệp', '#Huyền Huyễn', '#Ngôn Tình', '#Đô Thị', '#Võng Du', '#Khoa Huyễn']
-
 export default function Home() {
   const { isAuthenticated, user } = useAuth()
   const [books, setBooks] = useState([])
+  const [categories, setCategories] = useState([])
   const [favorites, setFavorites] = useState([])
   const [recommendations, setRecommendations] = useState([])
   const [error, setError] = useState('')
@@ -50,6 +49,12 @@ export default function Home() {
     }
   }, [isAuthenticated, user])
 
+  useEffect(() => {
+    getCategories()
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.error('Lỗi tải thể loại:', err))
+  }, [])
+
   // Lọc theo category chỉ áp dụng được khi có categoryId (search API không trả categoryId)
   let filteredBooks = books
   if (categoryId && !searchText) {
@@ -64,7 +69,7 @@ export default function Home() {
 
         {isAuthenticated && favorites.length > 0 && (
           <section className="book-section">
-            <h3>❤️ Sách đang đọc</h3>
+            <h3><i className="bi bi-heart-fill text-danger"></i> Sách đang đọc</h3>
             <div className="book-row">
               {favorites.map((b) => <BookCard key={b.id} book={b} />)}
             </div>
@@ -73,13 +78,13 @@ export default function Home() {
 
         <section className="book-section tags-section">
           <div className="tags-container">
-            {MOCK_TAGS.map(tag => (
+            {categories.map(category => (
               <button
-                key={tag}
-                className="tag-badge"
-                onClick={() => navigate(`/?search=${tag.replace('#', '')}`)}
+                key={category.id}
+                className={categoryId === String(category.id) ? "tag-badge active" : "tag-badge"}
+                onClick={() => navigate(categoryId === String(category.id) ? '/' : `/?category=${category.id}`)}
               >
-                {tag}
+                {category.name}
               </button>
             ))}
           </div>
@@ -87,7 +92,7 @@ export default function Home() {
 
         {!searchText && !categoryId && recommendations.length > 0 && (
           <section className="book-section">
-            <h3>✨ Đề xuất cho bạn</h3>
+            <h3><i className="bi bi-stars text-warning"></i> Đề xuất cho bạn</h3>
             <div className="book-grid">
               {recommendations.map((b) => <BookCard key={b.id} book={b} />)}
             </div>
@@ -96,7 +101,7 @@ export default function Home() {
 
         {!searchText && !categoryId && (
           <section className="book-section">
-            <h3>🔥 Bảng Xếp Hạng (Trending)</h3>
+            <h3><i className="bi bi-fire text-danger"></i> Bảng Xếp Hạng (Trending)</h3>
             <div className="book-row trending-row">
               {books.slice().sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 10).map((b, index) => (
                 <div key={b.id} className="trending-item">

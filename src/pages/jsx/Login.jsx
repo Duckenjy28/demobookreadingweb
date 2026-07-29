@@ -32,13 +32,13 @@ export default function Login() {
   return (
     <div className="auth-page">
       <header className="auth-header">
-        <div className="auth-brand">
-          <span className="auth-brand-icon">📚</span>
+        <Link to="/" className="auth-brand" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span className="auth-brand-icon"><i className="bi bi-book-half text-primary"></i></span>
           <div>
             <div className="auth-brand-name">BookReading</div>
             <div className="auth-brand-tagline">Đọc sách mọi lúc, mọi nơi</div>
           </div>
-        </div>
+        </Link>
       </header>
 
       <div className="auth-container">
@@ -77,7 +77,7 @@ export default function Login() {
                   onClick={() => setShowPassword((v) => !v)}
                   tabIndex={-1}
                 >
-                  {showPassword ? '🙈' : '👁'}
+                  <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
                 </button>
               </div>
             </div>
