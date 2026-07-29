@@ -20,6 +20,7 @@ export default function AdminAuthors() {
     setEditing(a)
     setName(a.name)
     setBio(a.bio || '')
+    setShowModal(true)
   }
 
   const handleSave = async () => {
@@ -61,20 +62,31 @@ export default function AdminAuthors() {
       {authors.filter(a => a.name.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
         <p>Không có tác giả</p>
       ) : (
-        <ul className="admin-list">
-          {authors.filter(a => a.name.toLowerCase().includes(search.toLowerCase())).map((a) => (
-            <li key={a.id} style={{ marginBottom: 8 }}>
-              <strong>{a.name}</strong>
-              <div className="muted">{a.bio}</div>
-              <div className="spaced">
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button className="btn-secondary" onClick={() => { startEdit(a); setShowModal(true) }}>Sửa</button>
-                  <button className="danger" onClick={() => handleDelete(a.id)}>Xóa</button>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Bio</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {authors.filter(a => a.name.toLowerCase().includes(search.toLowerCase())).map((a) => (
+              <tr key={a.id}>
+                <td>{a.id}</td>
+                <td>{a.name}</td>
+                <td className="muted">{a.bio}</td>
+                <td>
+                  <div className="actions-inline">
+                    <button className="btn-secondary" onClick={() => startEdit(a)}>Sửa</button>
+                    <button className="danger" onClick={() => handleDelete(a.id)}>Xóa</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
 
       {showModal && (

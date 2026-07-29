@@ -14,6 +14,7 @@ import UserBooks from './pages/jsx/UserBooks'
 import Library from './pages/jsx/Library'
 import BookForm from './pages/jsx/BookForm'
 import BookManage from './pages/jsx/BookManage'
+import ChangePassword from './pages/jsx/ChangePassword'
 import AdminDashboard from './pages/jsx/admin/AdminDashboard'
 import AdminBooks from './pages/jsx/admin/AdminBooks'
 import AdminAuthors from './pages/jsx/admin/AdminAuthors'
@@ -38,6 +39,7 @@ function App() {
               <Route path="/books/:id" element={<BookDetail />} />
               <Route path="/chapters/:id" element={<ChapterDetail />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/profile/change-password" element={<ChangePassword />} />
               <Route path="/library" element={<Library />} />
               <Route path="/library/new" element={<BookForm />} />
               <Route path="/library/books/:id/edit" element={<BookForm />} />

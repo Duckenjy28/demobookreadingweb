@@ -49,8 +49,10 @@ export const updateCategory = (id, data) => axiosClient.put(`/categories/update/
 export const deleteCategory = (id) => axiosClient.delete(`/categories/delete/${id}`)
 
 // Users (backend may not expose full user management; placeholder)
-export const getUsers = () => axiosClient.get('/users/list')
-export const deleteUser = (id) => axiosClient.delete(`/users/delete/${id}`)
+export const getUsers = () => axiosClient.get('/admin/users/list')
+export const deleteUser = (id) => axiosClient.delete(`/admin/users/delete/${id}`)
+export const createUser = (data) => axiosClient.post('/admin/users/create', data)
+export const updateUser = (id, data) => axiosClient.put(`/admin/users/${id}`, data)
 
 export const createChapter = (bookId, chapterData, file) => {
   const formData = new FormData()

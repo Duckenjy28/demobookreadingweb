@@ -147,6 +147,13 @@ export default function NavBar() {
                 >
                   👤 Xem hồ sơ
                 </Link>
+                <Link
+                  to="/profile/change-password"
+                  className="user-dropdown-item"
+                  onClick={() => setShowUserMenu(false)}
+                >
+                  🔒 Đổi mật khẩu
+                </Link>
                 <button className="user-dropdown-item logout" onClick={handleLogout}>
                   🚪 Đăng xuất
                 </button>

@@ -18,6 +18,7 @@ export default function AdminCategories() {
   const startEdit = (c) => {
     setEditing(c)
     setName(c.name)
+    setShowModal(true)
   }
 
   const handleSave = async () => {
@@ -58,19 +59,29 @@ export default function AdminCategories() {
       {items.filter(i => i.name.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
         <p>Không có thể loại</p>
       ) : (
-        <ul className="admin-list">
-          {items.filter(i => i.name.toLowerCase().includes(search.toLowerCase())).map((c) => (
-            <li key={c.id} style={{ marginBottom: 8 }}>
-              <strong>{c.name}</strong>
-              <div className="spaced">
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button className="btn-secondary" onClick={() => { startEdit(c); setShowModal(true) }}>Sửa</button>
-                  <button className="danger" onClick={() => handleDelete(c.id)}>Xóa</button>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.filter(i => i.name.toLowerCase().includes(search.toLowerCase())).map((c) => (
+              <tr key={c.id}>
+                <td>{c.id}</td>
+                <td>{c.name}</td>
+                <td>
+                  <div className="actions-inline">
+                    <button className="btn-secondary" onClick={() => startEdit(c)}>Sửa</button>
+                    <button className="danger" onClick={() => handleDelete(c.id)}>Xóa</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
 
       {showModal && (
