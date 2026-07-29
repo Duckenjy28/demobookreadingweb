@@ -254,7 +254,6 @@ export default function BookDetail() {
               ))}
             </div>
           )}
-        </div>
 
           {tab === 'reviews' && (
             <div className="review-section">
