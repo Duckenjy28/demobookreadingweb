@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { createChapter } from '../../api/bookApi'
+import { createChapter, getChapterContent, updateChapter } from '../../api/bookApi'
 import NavBar from '../../components/NavBar'
 import '../css/BookForm.css'
 import '../css/ChapterForm.css'
 
 export default function ChapterForm() {
-  const { id } = useParams() // bookId
+  const { id, chapterId } = useParams() // bookId and optional chapterId
   const navigate = useNavigate()
 
   const [mode, setMode] = useState('write') // 'write' | 'upload'
@@ -17,6 +17,32 @@ export default function ChapterForm() {
   const [isPublic, setIsPublic] = useState(true)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [chapterLoaded, setChapterLoaded] = useState(false)
+
+  useEffect(() => {
+    if (!chapterId) return
+
+    setTimeout(() => {
+      setLoading(true)
+      setIsEditMode(true)
+    }, 0)
+
+    getChapterContent(chapterId)
+      .then((res) => {
+        const chapter = res.data
+        setTitle(chapter.title || '')
+        setPageNumber(chapter.pageNumber || '')
+        setContent(chapter.content || '')
+        setIsPublic(chapter.isPublic ?? true)
+        setMode('write')
+        setChapterLoaded(true)
+      })
+      .catch((err) => {
+        setError(err.response?.data?.message || 'Không tải được chương')
+      })
+      .finally(() => setLoading(false))
+  }, [chapterId])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -26,7 +52,7 @@ export default function ChapterForm() {
       setError('Vui lòng nhập nội dung chương')
       return
     }
-    if (mode === 'upload' && !file) {
+    if (mode === 'upload' && !file && !isEditMode) {
       setError('Vui lòng chọn file để tải lên')
       return
     }
@@ -39,10 +65,16 @@ export default function ChapterForm() {
         content: mode === 'write' ? content : null,
         isPublic,
       }
-      await createChapter(id, chapterData, mode === 'upload' ? file : null)
+
+      if (isEditMode && chapterId) {
+        await updateChapter(chapterId, chapterData, mode === 'upload' ? file : null)
+      } else {
+        await createChapter(id, chapterData, mode === 'upload' ? file : null)
+      }
+
       navigate(`/library/books/${id}`)
     } catch (err) {
-      setError(err.response?.data?.message || 'Thêm chương thất bại')
+      setError(err.response?.data?.message || (isEditMode ? 'Cập nhật chương thất bại' : 'Thêm chương thất bại'))
     } finally {
       setLoading(false)
     }
@@ -52,7 +84,7 @@ export default function ChapterForm() {
     <div>
       <NavBar />
       <div className="book-form-page">
-        <h1>Thêm chương mới</h1>
+        <h1>{isEditMode ? 'Sửa chương' : 'Thêm chương mới'}</h1>
 
         {error && <div className="book-form-error">{error}</div>}
 
@@ -117,6 +149,11 @@ export default function ChapterForm() {
               {file && <p className="chapter-file-name">Đã chọn: {file.name}</p>}
             </div>
           )}
+          {isEditMode && chapterLoaded && !content && mode === 'upload' && (
+            <div className="book-form-field book-form-note">
+              <p>Lưu ý: nội dung chương hiện tại không khả dụng để sửa trực tiếp vì đã lưu dưới dạng tệp. Bạn có thể tải lên tệp mới để cập nhật nội dung.</p>
+            </div>
+          )}
 
           <div className="book-form-field book-form-checkbox">
             <label>
@@ -134,7 +171,7 @@ export default function ChapterForm() {
               Hủy
             </button>
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Đang lưu...' : 'Lưu chương'}
+              {loading ? 'Đang lưu...' : isEditMode ? 'Lưu thay đổi' : 'Lưu chương'}
             </button>
           </div>
         </form>

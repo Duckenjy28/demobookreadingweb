@@ -10,6 +10,7 @@ import AuthorDetail from './pages/jsx/AuthorDetail'
 import BookDetail from './pages/jsx/BookDetail'
 import ChapterDetail from './pages/jsx/ChapterDetail'
 import UserProfile from './pages/jsx/UserProfile'
+import UserBooks from './pages/jsx/UserBooks'
 import Library from './pages/jsx/Library'
 import BookForm from './pages/jsx/BookForm'
 import BookManage from './pages/jsx/BookManage'
@@ -41,6 +42,9 @@ function App() {
               <Route path="/library/new" element={<BookForm />} />
               <Route path="/library/books/:id/edit" element={<BookForm />} />
               <Route path="/library/books/:id" element={<BookManage />} />
+              <Route path="/library/books/:id/chapters/new" element={<ChapterForm />} />
+              <Route path="/library/books/:id/chapters/:chapterId/edit" element={<ChapterForm />} />
+              <Route path="/users/:id/books" element={<UserBooks />} />
 
               <Route path="/admin" element={<RequireAdmin><AdminLayout/></RequireAdmin>}>
                 <Route index element={<AdminDashboard />} />
@@ -49,7 +53,6 @@ function App() {
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="users" element={<AdminUsers />} />
               </Route>
-              <Route path="/library/books/:id/chapters/new" element={<ChapterForm />} />
             </Routes>
           </ReaderProvider>
         </HistoryProvider>

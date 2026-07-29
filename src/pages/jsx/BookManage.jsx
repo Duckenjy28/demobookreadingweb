@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { getBookDetail, getBookChapters, deleteChapter, updateChapter } from '../../api/bookApi'
+import { getBookDetail, getBookChapters, deleteChapter } from '../../api/bookApi'
 import NavBar from '../../components/NavBar'
 import { useAuth } from '../../context/AuthContext'
 import '../css/Library.css'
@@ -37,26 +37,8 @@ export default function BookManage() {
     }
   }
 
-  // Chapter edit modal
-  const [showChapterModal, setShowChapterModal] = useState(false)
-  const [editingChapter, setEditingChapter] = useState(null)
-  const [chapterForm, setChapterForm] = useState({ title: '', pageNumber: 1, isPublic: true, content: '' })
-
-  const openEditChapter = (ch) => {
-    setEditingChapter(ch)
-    setChapterForm({ title: ch.title, pageNumber: ch.pageNumber, isPublic: ch.isPublic, content: ch.content || '' })
-    setShowChapterModal(true)
-  }
-
-  const handleSaveChapter = async () => {
-    try {
-      await updateChapter(editingChapter.id, chapterForm, null)
-      setShowChapterModal(false)
-      setEditingChapter(null)
-      loadChapters()
-    } catch (err) {
-      alert('Lỗi: ' + (err.response?.data?.message || err.message))
-    }
+  const navigateToChapterEdit = (chapterId) => {
+    navigate(`/library/books/${id}/chapters/${chapterId}/edit`)
   }
 
   if (error) return <div><NavBar /><p style={{ color: 'red', padding: 24 }}>{error}</p></div>
@@ -104,29 +86,12 @@ export default function BookManage() {
                     {ch.isPublic ? 'Công khai' : 'Riêng tư'}
                   </span>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => openEditChapter(ch)}>Sửa</button>
+                    <button onClick={() => navigateToChapterEdit(ch.id)}>Sửa</button>
                     <button className="danger" onClick={() => handleDeleteChapter(ch.id)}>Xóa</button>
                   </div>
                 </span>
               </div>
             ))}
-          </div>
-        )}
-        {showChapterModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h3>Sửa chương</h3>
-              <div style={{ display: 'grid', gap: 8 }}>
-                <input value={chapterForm.title} onChange={(e) => setChapterForm({ ...chapterForm, title: e.target.value })} placeholder="Tiêu đề chương" />
-                <input type="number" value={chapterForm.pageNumber} onChange={(e) => setChapterForm({ ...chapterForm, pageNumber: parseInt(e.target.value || '1') })} />
-                <textarea value={chapterForm.content} onChange={(e) => setChapterForm({ ...chapterForm, content: e.target.value })} placeholder="Nội dung chương" rows={8} />
-                <label><input type="checkbox" checked={chapterForm.isPublic} onChange={(e) => setChapterForm({ ...chapterForm, isPublic: e.target.checked })} /> Công khai</label>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-                <button className="btn-secondary" onClick={() => setShowChapterModal(false)}>Hủy</button>
-                <button className="btn-primary" onClick={handleSaveChapter}>Lưu</button>
-              </div>
-            </div>
           </div>
         )}
       </div>
