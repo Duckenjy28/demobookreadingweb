@@ -16,8 +16,19 @@ export const addFavoriteBook = (userId, bookId) =>
   axiosClient.post(`/reading/favorites/add/${bookId}`, null, { params: { userId } })
 export const removeFavoriteBook = (userId, bookId) =>
   axiosClient.delete(`/reading/favorites/remove/${bookId}`, { params: { userId } })
-export const searchBooks = (query, page = 0, size = 20) =>
-  axiosClient.get('/search/books', { params: { q: query, page, size } })
+export const getRecentlyUpdatedFavoriteBooks = (userId) =>
+  axiosClient.get('/reading/favorites/recently-updated', { params: { userId } })
+export const searchBooks = (query, sortBy = 'relevance', page = 0, size = 20) =>
+  axiosClient.get('/search/books', { params: { q: query, sortBy, page, size } })
+export const getRecommendations = (limit = 10) =>
+  axiosClient.get('/recommendations', { params: { limit } })
+export const getReviews = (bookId, page = 0, size = 10) =>
+  axiosClient.get(`/reviews/book/${bookId}`, { params: { page, size } })
+export const submitReview = (data) => axiosClient.post('/reviews', data)
+export const getRelatedBooksByAuthor = (bookId) =>
+  axiosClient.get(`/books/${bookId}/related/author`)
+export const getRelatedBooksByUploader = (bookId) =>
+  axiosClient.get(`/books/${bookId}/related/uploader`)
 
 // Mới thêm — quản lý kho truyện của user
 export const createBook = (data) => axiosClient.post('/books/upload', data)

@@ -6,7 +6,10 @@ import {
   addFavoriteBook,
   removeFavoriteBook,
   getFavoriteBooks,
-  getBooks,
+  getRelatedBooksByAuthor,
+  getRelatedBooksByUploader,
+  getReviews,
+  submitReview
 } from '../../api/bookApi'
 import { useAuth } from '../../context/AuthContext'
 import { HistoryContext } from '../../context/HistoryContext'
@@ -34,7 +37,11 @@ export default function BookDetail() {
   const [isFavorite, setIsFavorite] = useState(false)
   const [tab, setTab] = useState('about')
   const [error, setError] = useState('')
-  const [suggestedBooks, setSuggestedBooks] = useState([])
+  const [authorBooks, setAuthorBooks] = useState([])
+  const [uploaderBooks, setUploaderBooks] = useState([])
+  const [reviews, setReviews] = useState([])
+  const [rating, setRating] = useState(6)
+  const [reviewContent, setReviewContent] = useState('')
 
   useEffect(() => {
     getBookDetail(id)
@@ -78,15 +85,43 @@ export default function BookDetail() {
 
   useEffect(() => {
     if (!book) return
-    getBooks()
-      .then((res) => {
-        const related = res.data.filter(
-          (b) => b.categoryId === book.categoryId && String(b.id) !== String(id)
-        )
-        setSuggestedBooks(related.slice(0, 6))
-      })
-      .catch(() => setSuggestedBooks([]))
+    getRelatedBooksByAuthor(id)
+      .then((res) => setAuthorBooks(res.data))
+      .catch(() => setAuthorBooks([]))
+    getRelatedBooksByUploader(id)
+      .then((res) => setUploaderBooks(res.data))
+      .catch(() => setUploaderBooks([]))
   }, [book, id])
+
+  useEffect(() => {
+    if (tab === 'reviews') {
+      getReviews(id)
+        .then((res) => setReviews(res.data.content || res.data || []))
+        .catch(() => setReviews([]))
+    }
+  }, [id, tab])
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault()
+    if (!isAuthenticated) {
+      alert('Vui lòng đăng nhập để đánh giá!')
+      return
+    }
+    if (rating < 1 || rating > 6) {
+      alert('Điểm đánh giá phải từ 1 đến 6 sao')
+      return
+    }
+    try {
+      await submitReview({ bookId: id, rating, content: reviewContent })
+      alert('Gửi đánh giá thành công!')
+      setReviewContent('')
+      // Refresh reviews
+      const res = await getReviews(id)
+      setReviews(res.data.content || res.data || [])
+    } catch (err) {
+      alert('Lỗi: ' + (err.response?.data?.message || err.message))
+    }
+  }
 
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
@@ -159,6 +194,8 @@ export default function BookDetail() {
               <span>📖 {book.categoryName}</span>
               {chapters.length > 0 && <span>📄 {chapters.length} Chapters</span>}
               <span>👁 {(book.viewCount ?? 0).toLocaleString()} Views</span>
+              <span>❤️ {book.favoriteCount ?? 0} Likes</span>
+              <span>⭐ {book.averageRating ? book.averageRating.toFixed(1) : 0}/6 ({book.reviewCount ?? 0} Reviews)</span>
               {statusLabel && <span>🏷 {statusLabel}</span>}
             </div>
 
@@ -193,6 +230,12 @@ export default function BookDetail() {
           >
             Table of Contents
           </button>
+          <button
+            className={tab === 'reviews' ? 'tab active' : 'tab'}
+            onClick={() => setTab('reviews')}
+          >
+            Đánh giá
+          </button>
         </div>
 
         <div className="book-detail-content">
@@ -213,11 +256,70 @@ export default function BookDetail() {
           )}
         </div>
 
-        {suggestedBooks.length > 0 && (
+          {tab === 'reviews' && (
+            <div className="review-section">
+              {isAuthenticated ? (
+                <form className="review-form" onSubmit={handleReviewSubmit}>
+                  <h4>Viết đánh giá của bạn</h4>
+                  <div className="form-group">
+                    <label>Điểm (1-6 sao):</label>
+                    <input 
+                      type="number" min="1" max="6" 
+                      value={rating} onChange={(e) => setRating(parseInt(e.target.value) || 6)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <textarea 
+                      placeholder="Nội dung đánh giá..." 
+                      rows="3" 
+                      value={reviewContent} 
+                      onChange={(e) => setReviewContent(e.target.value)}
+                      required
+                    ></textarea>
+                  </div>
+                  <button type="submit" className="btn-primary">Gửi đánh giá</button>
+                </form>
+              ) : (
+                <p>Vui lòng <Link to="/login">đăng nhập</Link> để viết đánh giá.</p>
+              )}
+              
+              <div className="review-list">
+                {reviews.length === 0 ? (
+                  <p>Chưa có đánh giá nào.</p>
+                ) : (
+                  reviews.map((rv) => (
+                    <div key={rv.id} className="review-item" style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
+                      <div className="review-meta">
+                        <strong>{rv.username || 'Người dùng'}</strong> 
+                        <span style={{ color: 'orange', marginLeft: '10px' }}>
+                          {'⭐'.repeat(rv.rating)}
+                        </span>
+                      </div>
+                      <p style={{ marginTop: '5px' }}>{rv.content}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {authorBooks.length > 0 && (
           <div className="related-section">
-            <h3>Có thể bạn cũng thích</h3>
+            <h3>Cùng tác giả</h3>
             <div className="book-grid">
-              {suggestedBooks.map((b) => (
+              {authorBooks.map((b) => (
+                <BookCard key={b.id} book={b} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {uploaderBooks.length > 0 && (
+          <div className="related-section">
+            <h3>Cùng người đăng</h3>
+            <div className="book-grid">
+              {uploaderBooks.map((b) => (
                 <BookCard key={b.id} book={b} />
               ))}
             </div>
