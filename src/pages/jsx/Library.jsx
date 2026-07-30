@@ -24,7 +24,7 @@ export default function Library() {
       .then((res) => {
         setMyBooks(res.data.filter((b) => b.uploadedByUserId === user.id))
       })
-      .catch((err) => setError(err.response?.status + ' - ' + err.message))
+      .catch((err) => setError('Lỗi tải thư viện sách: ' + (err.response?.data?.message || err.message)))
       .finally(() => setLoading(false))
   }, [user])
 

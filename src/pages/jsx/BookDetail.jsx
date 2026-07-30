@@ -46,7 +46,7 @@ export default function BookDetail() {
   useEffect(() => {
     getBookDetail(id)
       .then((res) => setBook(res.data))
-      .catch((err) => setError(err.response?.status + ' - ' + err.message))
+      .catch((err) => setError('Lỗi tải chi tiết sách: ' + (err.response?.data?.message || err.message)))
   }, [id])
 
   useEffect(() => {

@@ -27,11 +27,11 @@ export default function Home() {
     if (searchText) {
       searchBooks(searchText, sortBy)
         .then((res) => setBooks(res.data.items))
-        .catch((err) => setError(err.response?.status + ' - ' + err.message))
+        .catch((err) => setError('Lỗi tìm kiếm sách: ' + (err.response?.data?.message || err.message)))
     } else {
       getBooks()
         .then((res) => setBooks(res.data))
-        .catch((err) => setError(err.response?.status + ' - ' + err.message))
+        .catch((err) => setError('Lỗi tải danh sách sách: ' + (err.response?.data?.message || err.message)))
     }
   }, [searchText, sortBy])
 

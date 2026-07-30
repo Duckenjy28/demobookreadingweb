@@ -11,7 +11,7 @@ export default function AuthorList() {
   useEffect(() => {
     getAuthors()
       .then((res) => setAuthors(res.data))
-      .catch((err) => setError(err.response?.status + ' - ' + err.message))
+      .catch((err) => setError('Lỗi tải danh sách tác giả: ' + (err.response?.data?.message || err.message)))
   }, [])
 
   return (

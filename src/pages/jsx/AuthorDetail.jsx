@@ -20,7 +20,7 @@ getBooks()
   .then((res) => {
     setBooks(res.data.filter((b) => String(b.authorId) === id))   // 👈 phải là authorId, không phải author?.id
   })
-  .catch((err) => setError(err.response?.status + ' - ' + err.message))
+  .catch((err) => setError('Lỗi tải sách của tác giả: ' + (err.response?.data?.message || err.message)))
   }, [id])
 
   return (

@@ -23,7 +23,7 @@ export default function BookManage() {
   useEffect(() => {
     getBookDetail(id)
       .then((res) => setBook(res.data))
-      .catch((err) => setError(err.response?.status + ' - ' + err.message))
+      .catch((err) => setError('Lỗi tải thông tin truyện: ' + (err.response?.data?.message || err.message)))
     loadChapters()
   }, [id, loadChapters])
 

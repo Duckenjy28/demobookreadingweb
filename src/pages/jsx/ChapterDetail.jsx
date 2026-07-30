@@ -48,9 +48,10 @@ export default function ChapterDetail() {
       .catch((err) =>
         setError(err.response?.status === 401 || err.response?.status === 403
           ? 'Bạn cần đăng nhập hoặc không có quyền xem chương này'
-          : 'Không tải được nội dung chương')
+          : 'Lỗi tải nội dung chương: ' + (err.response?.data?.message || err.message))
       )
-  }, [id, bookId, getProgress])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, bookId])
 
   // Track scroll position
   useEffect(() => {
