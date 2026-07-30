@@ -31,8 +31,23 @@ export const getRelatedBooksByUploader = (bookId) =>
   axiosClient.get(`/books/${bookId}/related/uploader`)
 
 // Mới thêm — quản lý kho truyện của user
-export const createBook = (data) => axiosClient.post('/books/upload', data)
-export const updateBook = (id, data) => axiosClient.put(`/books/update/${id}`, data)
+export const createBook = (bookData, file) => {
+  const formData = new FormData()
+  formData.append('book', new Blob([JSON.stringify(bookData)], { type: 'application/json' }))
+  if (file) formData.append('file', file)
+  return axiosClient.post('/books/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}
+
+export const updateBook = (id, bookData, file) => {
+  const formData = new FormData()
+  formData.append('book', new Blob([JSON.stringify(bookData)], { type: 'application/json' }))
+  if (file) formData.append('file', file)
+  return axiosClient.put(`/books/update/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}
 export const toggleBookVisibility = (id, isPublic) =>
   axiosClient.patch(`/books/change-visibility/${id}`, null, { params: { isPublic } })
 

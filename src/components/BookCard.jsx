@@ -20,6 +20,14 @@ export default function BookCard({ book }) {
       </div>
       <h4 className="book-title">{book.title}</h4>
       <p className="book-category">{category}</p>
+      <div className="book-stats" style={{ fontSize: '0.85rem', color: '#888', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }} title="Lượt xem">
+          <i className="bi bi-eye"></i> {(book.viewCount || 0).toLocaleString()}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }} title="Đánh giá">
+          <i className="bi bi-star-fill text-warning"></i> {book.averageRating ? book.averageRating.toFixed(1) : '0.0'}/6 ({book.reviewCount || 0})
+        </span>
+      </div>
     </Link>
   )
 }

@@ -27,6 +27,7 @@ export default function BookForm() {
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [coverFile, setCoverFile] = useState(null)
 
   useEffect(() => {
     if (id) {
@@ -97,7 +98,7 @@ export default function BookForm() {
           status: form.status,
 
           isPublic: form.isPublic,
-        })
+        }, coverFile)
 
         navigate(`/library/books/${id}`)
       } else {
@@ -117,7 +118,7 @@ export default function BookForm() {
           status: form.status,
 
           isPublic: form.isPublic,
-        })
+        }, coverFile)
 
         navigate(`/library/books/${res.data.id}`)
       }
@@ -228,14 +229,30 @@ export default function BookForm() {
           </div>
 
           <div className="book-form-field">
-            <label>Ảnh bìa (URL)</label>
+            <label>Ảnh bìa (Tải file ảnh lên hoặc nhập URL)</label>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setCoverFile(e.target.files[0])
+                  handleChange('coverImage', '')
+                }
+              }}
+              style={{ marginBottom: '8px' }}
+            />
 
             <input
               type="url"
-              placeholder="https://..."
+              placeholder="Hoặc nhập URL..."
               value={form.coverImage}
-              onChange={(e) => handleChange('coverImage', e.target.value)}
+              onChange={(e) => {
+                handleChange('coverImage', e.target.value)
+                setCoverFile(null)
+              }}
             />
+            {coverFile && <p style={{ fontSize: '13px', color: '#666' }}>Đã chọn file: {coverFile.name}</p>}
           </div>
 
           <div className="book-form-row">
