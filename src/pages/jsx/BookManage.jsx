@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getBookDetail, getBookChapters, deleteChapter } from '../../api/bookApi'
 import NavBar from '../../components/NavBar'
 import { useAuth } from '../../context/AuthContext'
+import { HistoryContext } from '../../context/HistoryContext'
+import { useContext } from 'react'
 import '../css/Library.css'
 import '../css/BookManage.css'
 
@@ -13,6 +15,7 @@ export default function BookManage() {
   const [chapters, setChapters] = useState([])
   const [error, setError] = useState('')
   const { user } = useAuth()
+  const { getProgress, saveProgress } = useContext(HistoryContext)
 
   const loadChapters = useCallback(() => {
     getBookChapters(id)
@@ -30,7 +33,17 @@ export default function BookManage() {
   const handleDeleteChapter = async (chapterId) => {
     if (!confirm('Xóa chương này?')) return
     try {
+      const currentProgress = getProgress(id)
+      
       await deleteChapter(chapterId)
+      
+      if (currentProgress && String(currentProgress.chapterId) === String(chapterId)) {
+        const chapterIndex = chapters.findIndex(c => String(c.id) === String(chapterId))
+        if (chapterIndex > 0) {
+          saveProgress(id, chapters[chapterIndex - 1].id, 0)
+        }
+      }
+
       loadChapters()
     } catch (err) {
       alert('Lỗi: ' + (err.response?.data?.message || err.message))
